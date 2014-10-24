@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+device=$(networksetup -listallhardwareports | pcregrep -M -o1 '.*[hH]ardware\s[pP]ort:\s[wW]i-[fF]i\n[dD]evice:\s(\w*)')
+
+function toggle {
+    if networksetup -getairportpower $device | grep -o -q 'On'; then
+        networksetup -setairportpower $device off
+    else
+        networksetup -setairportpower $device on
+    fi
+    status
+}
+
+function status {
+    networksetup -getairportpower $device
+}
+
+function info {
+    networksetup -getinfo wi-fi
+}
+
+if [ $# -lt 1 ]; then
+    echo please specify an option
+    echo options include: info, status, toggle
+    exit 1
+fi
+
+case $1 in
+    info )
+        info
+        ;;
+    status )
+        status
+        ;;
+    toggle )
+        toggle
+        ;;
+esac
